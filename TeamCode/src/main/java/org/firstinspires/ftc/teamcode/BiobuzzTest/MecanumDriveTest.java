@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class MecanumDriveTest extends OpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;
+    private DcMotor intake;
 
     @Override
     public void init() {
@@ -16,6 +17,7 @@ public class MecanumDriveTest extends OpMode {
         frontRight = hardwareMap.get(DcMotor.class, "FR");
         backLeft = hardwareMap.get(DcMotor.class, "BL");
         backRight = hardwareMap.get(DcMotor.class, "BR");
+        intake = hardwareMap.get(DcMotor.class, "Intake");
 
         // Mecanum drives typically need one side reversed so both sides drive
         // the robot forward with the same joystick direction.
@@ -52,15 +54,24 @@ public class MecanumDriveTest extends OpMode {
         double max = Math.max(1.0, Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
                 Math.max(Math.abs(frontRightPower), Math.abs(backRightPower)))));
 
-        frontLeft.setPower(frontLeftPower / max);
-        backLeft.setPower(backLeftPower / max);
-        frontRight.setPower(frontRightPower / max);
-        backRight.setPower(backRightPower / max);
+        // Drive is capped at 30% power unless the left bumper is held, which unlocks full speed.
+        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.3;
 
-        telemetry.addData("Front Left Power", frontLeftPower / max);
-        telemetry.addData("Front Right Power", frontRightPower / max);
-        telemetry.addData("Back Left Power", backLeftPower / max);
-        telemetry.addData("Back Right Power", backRightPower / max);
+        frontLeft.setPower((frontLeftPower / max) * speedLimiter);
+        backLeft.setPower((backLeftPower / max) * speedLimiter);
+        frontRight.setPower((frontRightPower / max) * speedLimiter);
+        backRight.setPower((backRightPower / max) * speedLimiter);
+
+        // Right trigger spins the intake forward, left trigger spins it backward.
+        double intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
+        intake.setPower(intakePower);
+
+        telemetry.addData("Speed Mode", gamepad1.left_bumper ? "Full (100%)" : "Limited (30%)");
+        telemetry.addData("Front Left Power", (frontLeftPower / max) * speedLimiter);
+        telemetry.addData("Front Right Power", (frontRightPower / max) * speedLimiter);
+        telemetry.addData("Back Left Power", (backLeftPower / max) * speedLimiter);
+        telemetry.addData("Back Right Power", (backRightPower / max) * speedLimiter);
+        telemetry.addData("Intake Power", intakePower);
         telemetry.update();
     }
 
