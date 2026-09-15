@@ -13,6 +13,8 @@ public class MecanumDriveTest extends OpMode {
     private DcMotor intake;
     private DcMotor transfer;
     private DcMotorEx launcher;
+    private static final double LAUNCHER_TARGET_VELOCITY = 1800; // TUNE HERE
+    private static final double LAUNCHER_VELOCITY_TOLERANCE = 50; // Ticks
 
     @Override
     public void init() {
@@ -20,9 +22,8 @@ public class MecanumDriveTest extends OpMode {
         frontRight = hardwareMap.get(DcMotor.class, "FR");
         backLeft = hardwareMap.get(DcMotor.class, "BL");
         backRight = hardwareMap.get(DcMotor.class, "BR");
-        DcMotor transfer = hardwareMap.get(DcMotor.class, "Transfer");
-        launcher = hardwareMap.get(DcMotorEx.class, "Launcher");
-
+        intake = hardwareMap.get(DcMotor.class, "Intake");
+        transfer = hardwareMap.get(DcMotor.class, "Transfer");
 
         // Mecanum drives typically need one side reversed so both sides drive
         // the robot forward with the same joystick direction.
@@ -62,8 +63,10 @@ public class MecanumDriveTest extends OpMode {
         double max = Math.max(1.0, Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
                 Math.max(Math.abs(frontRightPower), Math.abs(backRightPower)))));
 
-        // Drive is capped at 30% power unless the B button is held, which unlocks full speed.
-        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.6;
+        // Drive is capped at 60% power unless the X button is held, which unlocks full speed.
+        double speedLimiter = gamepad1.x ? 1.0 : 0.6; // pick any free button
+
+
 
         frontLeft.setPower((frontLeftPower / max) * speedLimiter);
         backLeft.setPower((backLeftPower / max) * speedLimiter);
@@ -74,26 +77,33 @@ public class MecanumDriveTest extends OpMode {
         double intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
         intake.setPower(intakePower);
 
-        double transferPower = (gamepad1.left_bumper ? 1 : 0) - (gamepad1.right_bumper ? 1 : 0);
-        transfer.setPower(transferPower);
 
-         double LAUNCHER_TARGET_VELOCITY = 1800; // TUNE HERE THIS IS YOUR PROBLEM
-
-        launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-
-        if (gamepad1.y ) {
+        if (gamepad1.y) {
             launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
         } else {
             launcher.setVelocity(0);
         }
 
+        boolean readyToShoot = Math.abs(launcher.getVelocity() - LAUNCHER_TARGET_VELOCITY) < LAUNCHER_VELOCITY_TOLERANCE;
 
-        telemetry.addData("Speed Mode", gamepad1.y ? "Full (100%)" : "Limited (60%)");
+        double transferPower = (gamepad1.left_bumper ? 1 : 0) - (gamepad1.right_bumper ? 1 : 0);
+
+        if (transferPower > 0 && !readyToShoot) {
+            transferPower = 0;
+        }
+
+        transfer.setPower(transferPower);
+
+
+
+        telemetry.addData("Speed Mode", speedLimiter == 1.0 ? "Full (100%)" : "Limited (60%)");
         telemetry.addData("Front Left Power", (frontLeftPower / max) * speedLimiter);
         telemetry.addData("Front Right Power", (frontRightPower / max) * speedLimiter);
         telemetry.addData("Back Left Power", (backLeftPower / max) * speedLimiter);
         telemetry.addData("Back Right Power", (backRightPower / max) * speedLimiter);
         telemetry.addData("Intake Power", intakePower);
+        telemetry.addData("Launcher Ready", readyToShoot);
+        telemetry.addData("Launcher Velocity", launcher.getVelocity());
         telemetry.update();
     }
 
