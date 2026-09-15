@@ -13,7 +13,7 @@ public class MecanumDriveTest extends OpMode {
     private DcMotor intake;
     private DcMotor transfer;
     private DcMotorEx launcher;
-    private static final double LAUNCHER_TARGET_VELOCITY = 1800; // TUNE HERE
+    private static final double LAUNCHER_TARGET_VELOCITY = 4000; // TUNE HERE
     private static final double LAUNCHER_VELOCITY_TOLERANCE = 50; // Ticks
 
     @Override
@@ -33,7 +33,8 @@ public class MecanumDriveTest extends OpMode {
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        launcher.setDirection(DcMotor.Direction.FORWARD);
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        launcher.setDirection(DcMotor.Direction.REVERSE);
         launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("Status", "Initialized");
