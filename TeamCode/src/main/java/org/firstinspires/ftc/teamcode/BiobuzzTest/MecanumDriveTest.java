@@ -32,7 +32,7 @@ public class MecanumDriveTest extends OpMode {
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        launcher.setDirection(DcMotorEx.Direction.FORWARD);
+        launcher.setDirection(DcMotor.Direction.FORWARD);
         launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("Status", "Initialized");
