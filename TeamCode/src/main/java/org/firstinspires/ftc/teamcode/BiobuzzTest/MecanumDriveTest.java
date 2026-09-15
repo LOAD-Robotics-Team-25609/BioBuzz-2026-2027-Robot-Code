@@ -24,6 +24,7 @@ public class MecanumDriveTest extends OpMode {
         backRight = hardwareMap.get(DcMotor.class, "BR");
         intake = hardwareMap.get(DcMotor.class, "Intake");
         transfer = hardwareMap.get(DcMotor.class, "Transfer");
+        launcher = hardwareMap.get(DcMotorEx.class, "Launcher");
 
         // Mecanum drives typically need one side reversed so both sides drive
         // the robot forward with the same joystick direction.
