@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.BiobuzzTest;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name = "Mecanum Drive Test", group = "Test")
@@ -11,6 +12,7 @@ public class MecanumDriveTest extends OpMode {
     private DcMotor frontLeft, frontRight, backLeft, backRight;
     private DcMotor intake;
     private DcMotor transfer;
+    private DcMotorEx launcher;
 
     @Override
     public void init() {
@@ -19,6 +21,8 @@ public class MecanumDriveTest extends OpMode {
         backLeft = hardwareMap.get(DcMotor.class, "BL");
         backRight = hardwareMap.get(DcMotor.class, "BR");
         DcMotor transfer = hardwareMap.get(DcMotor.class, "Transfer");
+        launcher = hardwareMap.get(DcMotorEx.class, "Launcher");
+
 
         // Mecanum drives typically need one side reversed so both sides drive
         // the robot forward with the same joystick direction.
@@ -27,9 +31,12 @@ public class MecanumDriveTest extends OpMode {
         backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        launcher.setDirection(DcMotorEx.Direction.FORWARD);
+        launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
     }
 
     @Override
@@ -70,7 +77,15 @@ public class MecanumDriveTest extends OpMode {
         double transferPower = (gamepad1.left_bumper ? 1 : 0) - (gamepad1.right_bumper ? 1 : 0);
         transfer.setPower(transferPower);
 
+         double LAUNCHER_TARGET_VELOCITY = 1800; // TUNE HERE THIS IS YOUR PROBLEM
 
+        launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+
+        if (gamepad1.y ) {
+            launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        } else {
+            launcher.setVelocity(0);
+        }
 
 
         telemetry.addData("Speed Mode", gamepad1.y ? "Full (100%)" : "Limited (60%)");
