@@ -10,6 +10,7 @@ public class MecanumDriveTest extends OpMode {
 
     private DcMotor frontLeft, frontRight, backLeft, backRight;
     private DcMotor intake;
+    private DcMotor transfer;
 
     @Override
     public void init() {
@@ -17,7 +18,7 @@ public class MecanumDriveTest extends OpMode {
         frontRight = hardwareMap.get(DcMotor.class, "FR");
         backLeft = hardwareMap.get(DcMotor.class, "BL");
         backRight = hardwareMap.get(DcMotor.class, "BR");
-        intake = hardwareMap.get(DcMotor.class, "Intake");
+        DcMotor transfer = hardwareMap.get(DcMotor.class, "Transfer");
 
         // Mecanum drives typically need one side reversed so both sides drive
         // the robot forward with the same joystick direction.
@@ -54,8 +55,8 @@ public class MecanumDriveTest extends OpMode {
         double max = Math.max(1.0, Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
                 Math.max(Math.abs(frontRightPower), Math.abs(backRightPower)))));
 
-        // Drive is capped at 30% power unless the left bumper is held, which unlocks full speed.
-        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.3;
+        // Drive is capped at 30% power unless the B button is held, which unlocks full speed.
+        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.6;
 
         frontLeft.setPower((frontLeftPower / max) * speedLimiter);
         backLeft.setPower((backLeftPower / max) * speedLimiter);
@@ -66,7 +67,13 @@ public class MecanumDriveTest extends OpMode {
         double intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
         intake.setPower(intakePower);
 
-        telemetry.addData("Speed Mode", gamepad1.left_bumper ? "Full (100%)" : "Limited (30%)");
+        double transferPower = (gamepad1.left_bumper ? 1 : 0) - (gamepad1.right_bumper ? 1 : 0);
+        transfer.setPower(transferPower);
+
+
+
+
+        telemetry.addData("Speed Mode", gamepad1.y ? "Full (100%)" : "Limited (60%)");
         telemetry.addData("Front Left Power", (frontLeftPower / max) * speedLimiter);
         telemetry.addData("Front Right Power", (frontRightPower / max) * speedLimiter);
         telemetry.addData("Back Left Power", (backLeftPower / max) * speedLimiter);
