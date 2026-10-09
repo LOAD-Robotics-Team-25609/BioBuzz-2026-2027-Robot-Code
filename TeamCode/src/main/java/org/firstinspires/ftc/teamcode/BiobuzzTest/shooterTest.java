@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class shooterTest extends OpMode {
 
     private DcMotorEx Shooter;
-    private static final double LAUNCHER_TARGET_VELOCITY = 2000; // TUNE HERE
+    private static final double LAUNCHER_TARGET_VELOCITY = 2000; // TUNE HERE cuz u will forget
     private static final double LAUNCHER_VELOCITY_TOLERANCE = 50; // Ticks
 
 
@@ -22,6 +22,7 @@ public class shooterTest extends OpMode {
        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
     }
     @Override
     public void init_loop() {
@@ -40,5 +41,7 @@ public class shooterTest extends OpMode {
         }
 
         boolean readyToShoot = Math.abs(Shooter.getVelocity() - LAUNCHER_TARGET_VELOCITY) < LAUNCHER_VELOCITY_TOLERANCE;
+        telemetry.addData("Shooter Ready", readyToShoot);
+        telemetry.addData("Shooter Velocity", Shooter.getVelocity()); //future reference, always leave telemtry on the bottom
     }
 }
