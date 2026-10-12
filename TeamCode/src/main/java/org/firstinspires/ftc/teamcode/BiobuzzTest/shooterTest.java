@@ -18,7 +18,7 @@ public class shooterTest extends OpMode {
 
        Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
 
-        Shooter.setDirection(DcMotor.Direction.REVERSE);
+        Shooter.setDirection(DcMotor.Direction.FORWARD);
        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -42,6 +42,6 @@ public class shooterTest extends OpMode {
 
         boolean readyToShoot = Math.abs(Shooter.getVelocity() - LAUNCHER_TARGET_VELOCITY) < LAUNCHER_VELOCITY_TOLERANCE;
         telemetry.addData("Shooter Ready", readyToShoot);
-        telemetry.addData("Shooter Velocity", Shooter.getVelocity()); //future reference, always leave telemtry on the bottom
+        telemetry.addData("Shooter Velocity", Shooter.getVelocity()); //future reference, always leave telemetry on the bottom
     }
 }
