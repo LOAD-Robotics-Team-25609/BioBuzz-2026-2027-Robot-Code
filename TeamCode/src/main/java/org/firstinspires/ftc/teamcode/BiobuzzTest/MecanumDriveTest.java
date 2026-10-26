@@ -65,8 +65,8 @@ public class MecanumDriveTest extends OpMode {
         double max = Math.max(1.0, Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
                 Math.max(Math.abs(frontRightPower), Math.abs(backRightPower)))));
 
-        // Drive is capped at 60% power unless the Left Bumper button is held, which unlocks full speed.
-        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.6;
+        //Drive is capped at 50% power unless the Left Bumper button is held, which unlocks full speed.
+        double speedLimiter = gamepad1.left_bumper ? 1.0 : 0.9;
 
 
 
@@ -99,10 +99,10 @@ public class MecanumDriveTest extends OpMode {
 
 
 
-        telemetry.addData("Speed Mode", speedLimiter == 1.0 ? "Full (100%)" : "Limited (60%)");
+       telemetry.addData("Speed Mode", speedLimiter == 1.0 ? "Full (100%)" : "Limited (100%)");
         telemetry.addData("Front Left Power", (frontLeftPower / max) * speedLimiter);
         telemetry.addData("Front Right Power", (frontRightPower / max) * speedLimiter);
-        telemetry.addData("Back Left Power", (backLeftPower / max) * speedLimiter);
+       telemetry.addData("Back Left Power", (backLeftPower / max) * speedLimiter);
         telemetry.addData("Back Right Power", (backRightPower / max) * speedLimiter);
         telemetry.addData("Intake Power", intakePower);
         telemetry.addData("Launcher Ready", readyToShoot);

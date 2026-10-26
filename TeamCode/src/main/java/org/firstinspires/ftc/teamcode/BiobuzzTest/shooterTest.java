@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class shooterTest extends OpMode {
 
     private DcMotorEx Shooter;
-    private static final double LAUNCHER_TARGET_VELOCITY = 2000; // TUNE HERE cuz u will forget
+    private static final double LAUNCHER_TARGET_VELOCITY = 3000; // TUNE HERE cuz u will forget
     private static final double LAUNCHER_VELOCITY_TOLERANCE = 50; // Ticks
 
-
+    private boolean shooterOn = false;
     @Override
     public void init() {
 
@@ -34,13 +34,16 @@ public class shooterTest extends OpMode {
 
     @Override
     public void loop() {
-        if (gamepad1.y) {
-            Shooter.setVelocity(LAUNCHER_TARGET_VELOCITY);
-        } else {
-            Shooter.setVelocity(0);
+        if (gamepad1.yWasPressed()) {
+            shooterOn = !shooterOn;   // Each press toggles on/off hopefully
         }
 
-        boolean readyToShoot = Math.abs(Shooter.getVelocity() - LAUNCHER_TARGET_VELOCITY) < LAUNCHER_VELOCITY_TOLERANCE;
+        Shooter.setVelocity(shooterOn ? LAUNCHER_TARGET_VELOCITY : 0);
+
+        boolean readyToShoot = shooterOn //Whatever happens, dont get rid of this
+                && Math.abs(Shooter.getVelocity() - LAUNCHER_TARGET_VELOCITY) < LAUNCHER_VELOCITY_TOLERANCE;
+
+        telemetry.addData("Shooter On", shooterOn);
         telemetry.addData("Shooter Ready", readyToShoot);
         telemetry.addData("Shooter Velocity", Shooter.getVelocity()); //future reference, always leave telemetry on the bottom
     }
