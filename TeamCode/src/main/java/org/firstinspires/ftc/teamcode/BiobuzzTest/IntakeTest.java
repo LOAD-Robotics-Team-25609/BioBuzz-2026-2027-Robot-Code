@@ -1,34 +1,57 @@
 package org.firstinspires.ftc.teamcode.BiobuzzTest;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name="Intake Test")
-public class IntakeTest extends LinearOpMode {
+@TeleOp(name = "JosephinesIntake", group = "Test")
+public class IntakeTest extends OpMode {
 
-    private DcMotor intakeMotor;
+    private DcMotor intake;
+    private DcMotor transfer;
+
+    private boolean intakeOn = false;
+    private boolean transferOn = false;
 
     @Override
-    public void runOpMode() {
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    public void init() {
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        transfer = hardwareMap.get(DcMotor.class, "Transfer");
 
-        waitForStart();
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
 
-        while (opModeIsActive()) {
-            if (gamepad2.right_trigger > 0.1) {
-                intakeMotor.setPower(1.0);
-            }
-                intakeMotor.setPower(0);
-            }
-        }
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
     }
 
+    @Override
+    public void loop() {
+        // Y toggles the intake
+        if (gamepad1.yWasPressed()) {
+            intakeOn = !intakeOn;
+        }
 
+        // A toggles the transfer
+        if (gamepad1.aWasPressed()) {
+            transferOn = !transferOn;
+        }
 
+        intake.setPower(intakeOn ? 1.0 : 0.0);
+        transfer.setPower(transferOn ? 1.0 : 0.0);
+
+        telemetry.addData("Intake", intakeOn ? "ON" : "OFF");
+        telemetry.addData("Transfer", transferOn ? "ON" : "OFF");
+        telemetry.update();
+    }
+
+    @Override
+    public void stop() {
+        intake.setPower(0);
+        transfer.setPower(0);
+    }
+}
 
 
 
