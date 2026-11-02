@@ -11,16 +11,13 @@ public class IntakeTest extends OpMode {
     private DcMotor intake;
     private DcMotor transfer;
 
-    private boolean intakeOn = false;
-    private boolean transferOn = false;
-
     @Override
     public void init() {
         intake = hardwareMap.get(DcMotor.class, "intake");
         transfer = hardwareMap.get(DcMotor.class, "Transfer");
 
-        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake.setDirection(DcMotor.Direction.REVERSE);
+        transfer.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -28,21 +25,15 @@ public class IntakeTest extends OpMode {
 
     @Override
     public void loop() {
-        // Y toggles the intake
-        if (gamepad1.yWasPressed()) {
-            intakeOn = !intakeOn;
-        }
+        // Stick y is negative when pushed forward, so flip it: forward = positive power
+        double intakePower = -gamepad1.right_stick_y;   // right stick runs the intake
+        double transferPower = -gamepad1.left_stick_y;  // left stick runs the transfer
 
-        // A toggles the transfer
-        if (gamepad1.aWasPressed()) {
-            transferOn = !transferOn;
-        }
+        intake.setPower(intakePower);
+        transfer.setPower(transferPower);
 
-        intake.setPower(intakeOn ? 1.0 : 0.0);
-        transfer.setPower(transferOn ? 1.0 : 0.0);
-
-        telemetry.addData("Intake", intakeOn ? "ON" : "OFF");
-        telemetry.addData("Transfer", transferOn ? "ON" : "OFF");
+        telemetry.addData("Intake power", "%.2f", intakePower);
+        telemetry.addData("Transfer power", "%.2f", transferPower);
         telemetry.update();
     }
 
